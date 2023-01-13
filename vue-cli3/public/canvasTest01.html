@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas
+      id="drawContainer"
+      width="1000"
+      height="1000"
+      style="border: 1px solid #333"
+    ></canvas>
+  </body>
+  <script>
+    const canvasEle = document.getElementById("drawContainer");
+    const context = canvasEle.getContext("2d");
+    let isDrawStart = false;
+    let startPosition = { x: 0, y: 0 };
+    let endPosition = { x: 0, y: 0 };
+
+    const getClientOffset = (event) => {
+      const { pageX, pageY } = event.touches ? event.touches[0] : event;
+      const x = pageX - canvasEle.offsetLeft;
+      const y = pageY - canvasEle.offsetTop;
+
+      return {
+        x,
+        y,
+      };
+    };
+
+    const drawRectangle = (width, height) => {
+      context.beginPath();
+      context.strokeStyle = "brown";
+      context.lineWidth = 10;
+      context.fillStyle = "orange";
+      context.rect(startPosition.x, startPosition.y, width, height);
+      context.stroke();
+      context.fill();
+    };
+
+    const clearCanvas = () => {
+      context.clearRect(0, 0, canvasEle.width, canvasEle.height);
+    };
+
+    const mouseDownListener = (event) => {
+      startPosition = getClientOffset(event);
+      isDrawStart = true;
+    };
+
+    const mouseMoveListener = (event) => {
+      if (!isDrawStart) return;
+
+      endPosition = getClientOffset(event);
+      const width = endPosition.x - startPosition.x;
+      const height = endPosition.y - startPosition.y;
+      clearCanvas();
+      drawRectangle(width, height);
+    };
+
+    const mouseupListener = (event) => {
+      isDrawStart = false;
+    };
+
+    canvasEle.addEventListener("mousedown", mouseDownListener);
+    canvasEle.addEventListener("mousemove", mouseMoveListener);
+    canvasEle.addEventListener("mouseup", mouseupListener);
+
+    canvasEle.addEventListener("touchstart", mouseDownListener);
+    canvasEle.addEventListener("touchmove", mouseMoveListener);
+    canvasEle.addEventListener("touchend", mouseupListener);
+  </script>
+</html>

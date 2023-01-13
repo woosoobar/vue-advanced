@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    #container {
+      /*background-color: lime;*/
+      width: 150px;
+      height: 150px;
+      cursor: pointer;
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    #heatmapContainer {
+      border: 1px solid red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="heatmapWrapper">
+    <div id="heatmapContainer" style="height: 4205px; width: 1278px">
+      <div id="heatmap1" class="heatmapTile" style="height: 4205px; position: relative">
+        <canvas id="myCanvas" class="heatmap-canvas" width="1278" height="4205" style="position: absolute; left: 0px; top: 0px"></canvas>
+      </div>
+    </div>
+  </div>
+  <script>
+    var canvas = document.getElementById('myCanvas'),
+      elemLeft = canvas.offsetLeft,
+      elemTop = canvas.offsetTop,
+      context = canvas.getContext('2d');
+
+    let start = {};
+    var mouseDown = false;
+
+    function getMousePos(canvas, evt) {
+      var rect = canvas.getBoundingClientRect(),
+        scaleX = canvas.width / rect.width,
+        scaleY = canvas.height / rect.height;
+
+      return {
+        x: (evt.clientX - rect.left) * scaleX,
+        y: (evt.clientY - rect.top) * scaleY,
+      };
+    }
+
+    function startRect(e) {
+      start = getMousePos(canvas, e);
+      mouseDown = true;
+    }
+
+    window.addEventListener('mousedown', startRect);
+
+    function endRect(e) {
+      let {
+        x,
+        y
+      } = getMousePos(canvas, e);
+      context.strokeStyle = 'blue';
+      context.strokeRect(start.x, start.y, x - start.x, y - start.y);
+      mouseDown = false;
+    }
+
+    function drawSquare(e) {
+      if (!mouseDown) return;
+      // creating a square
+      var width = Math.abs(start.x - canvas.getBoundingClientRect().offsetLeft);
+      var height = Math.abs(start.y - canvas.getBoundingClientRect().offsetLeft);
+
+      context.beginPath();
+      context.rect(start.x, start.y, width, height);
+      context.strokeStyle = 'blue';
+
+      context.stroke();
+    }
+
+    window.addEventListener('mouseup', endRect);
+
+    window.addEventListener('mousemove', drawSquare);
+    /**End Drawing a rectangle on the canvas **/
+  </script>
+</body>
+
+</html>
